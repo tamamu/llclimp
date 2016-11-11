@@ -1,0 +1,18 @@
+OASISFormat: 0.4
+Name:        Llclimp
+Version:     0.1.0
+Synopsis:    LLVM Common Lisp Implementation.
+Authors:     Tamamu
+License:     MIT
+Plugins:     META (0.4)
+Executable llclimp
+  Path:       src
+  BuildTools: ocamlbuild
+  MainIs:     main.ml
+  CompiledObject: best
+  BuildDepends:
+    llvm, llvm.bitreader
+SourceRepository master
+  Type:     git
+  Location: https://github.com/tamamu/llclimp.git
+  Branch:   master
