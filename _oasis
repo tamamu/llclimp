@@ -12,6 +12,17 @@ Executable llclimp
   CompiledObject: best
   BuildDepends:
     llvm, llvm.bitreader
+Library parser
+  Path:       src
+  BuildTools: ocamlbuild
+  Modules:    Parser
+  BuildDepends: 
+Library lexer
+  Path:       src
+  BuildTools: ocamlbuild
+  Modules:    Lexer
+  FindLibParent: parser
+  BuildDepends: parser, sedlex
 SourceRepository master
   Type:     git
   Location: https://github.com/tamamu/llclimp.git
