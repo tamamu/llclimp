@@ -16,6 +16,6 @@ type atom =
 [@@deriving show]
 
 type statement =
-  |Sexp of atom list
+  |Sexp of statement list
   |Atom of atom
 [@@deriving show]

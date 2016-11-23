@@ -29,7 +29,7 @@ statement:
 | atom=atom {Atom atom}
 
 sexp:
-| LParen atoms=list(atom) RParen {atoms}
+| LParen statements=list(statement) RParen {statements}
 
 
 atom:
