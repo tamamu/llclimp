@@ -5,24 +5,23 @@ Synopsis:    LLVM Common Lisp Implementation.
 Authors:     Tamamu
 License:     MIT
 Plugins:     META (0.4)
-Executable llclimp
+
+BuildTools: ocamlbuild
+
+Library llclimp
   Path:       src
-  BuildTools: ocamlbuild
-  MainIs:     main.ml
+  InternalModules: Parser
+  Modules: Ast, Syntax
   CompiledObject: best
   BuildDepends:
-    llvm, llvm.bitreader
-Library parser
+    llvm, llvm.bitreader, sedlex, menhirLib, ppx_deriving.show
+
+Executable llclimp
   Path:       src
-  BuildTools: ocamlbuild
-  Modules:    Parser
-  BuildDepends: 
-Library lexer
-  Path:       src
-  BuildTools: ocamlbuild
-  Modules:    Lexer
-  FindLibParent: parser
-  BuildDepends: parser, sedlex
+  MainIs:     main.ml
+  CompiledObject: best
+  BuildDepends: llclimp
+
 SourceRepository master
   Type:     git
   Location: https://github.com/tamamu/llclimp.git
