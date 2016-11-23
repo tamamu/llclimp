@@ -54,9 +54,10 @@ let exp_digit = [%sedlex.regexp? '0'..'9']
 let exp_initial = [%sedlex.regexp? alphabetic | Chars "!#$%&=-+*<>?/" | lu | ll | lt | lm | lo | nl]
 let exp_rest = [%sedlex.regexp? exp_initial | mn | mc | pc | cf | '.' | exp_digit]
 let exp_symbol = [%sedlex.regexp? exp_initial, Star exp_rest]
-let exp_integer = [%sedlex.regexp? Plus exp_digit]
-let exp_float = [%sedlex.regexp? (Opt exp_digit, '.', exp_integer)
-                             | (Plus exp_digit, '.', Opt exp_integer)]
+let exp_integer = [%sedlex.regexp? (Opt (Chars "+-")), Plus exp_digit]
+let exp_float = [%sedlex.regexp? (Opt (Chars "+-")),
+                               ((Opt exp_digit, '.', exp_integer)
+                               | (Plus exp_digit, '.', Opt exp_integer))]
 let exp_string = [%sedlex.regexp? '"', Star any, '"']
 
 let rec lex lexbuf =
@@ -70,9 +71,13 @@ let rec lex lexbuf =
     update lexbuf;
     lex lexbuf
 
-  | exp_symbol ->
+  | 't' ->
     update lexbuf;
-    Parser.Symbol (lexeme lexbuf)
+    Parser.T
+
+  | "nil" ->
+    update lexbuf;
+    Parser.Nil
 
   | exp_integer ->
     update lexbuf;
@@ -85,6 +90,10 @@ let rec lex lexbuf =
   | exp_string ->
     update lexbuf;
     Parser.String (lexeme lexbuf)
+
+  | exp_symbol ->
+    update lexbuf;
+    Parser.Symbol (lexeme lexbuf)
 
   | ';', Star (Compl '\n'), '\n' ->
     update lexbuf; new_line lexbuf;

@@ -8,7 +8,6 @@
 %token <string> String
 %token LParen RParen Eof
 
-
 %start main
 %type <Ast.statement list> main
 
