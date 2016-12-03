@@ -1,5 +1,6 @@
 %{ open Ast %}
 
+%token Quote
 %token Nil
 %token T
 %token <string> Symbol
@@ -32,6 +33,7 @@ sexp:
 
 
 atom:
+| Quote {Quote}
 | Nil {Nil}
 | T {T}
 | i=Integer {Integer i}

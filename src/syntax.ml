@@ -79,6 +79,10 @@ let rec lex lexbuf =
     update lexbuf;
     Parser.Nil
 
+  | "quote" ->
+    update lexbuf;
+    Parser.Quote
+
   | exp_integer ->
     update lexbuf;
     Parser.Integer (int_of_string @@ lexeme lexbuf)
