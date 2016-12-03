@@ -25,14 +25,34 @@ let rec codegen_expr = function
     (try Hashtbl.find symbol_tbl name with
      | Not_found -> raise (Error "unknown symbol"))
   | Ast.Sexp (vals) ->
-    let head = vals.hd in
-    if head == "quote" then Array.map codegen_expr vals.tl
-    else match lookup_function head the_module with
-      | Some head -> head
-      | None -> raise (Error "unknown function")
-let params = params head in
-let args = vals.tl in
-if Array.length params == Array.length args then () else
-  raise (Error "incorrect # arguments passed");
-let args = Array.map codegen_expr args in
-build_call head args "calltmp" builder
+    let head = try vals.hd with
+        Failure "hd" -> const_int bit_type 0
+    in
+    if head == Ast.Quote then
+      (try let rest = vals.tl with
+         Failure "tl" -> raise (Error "wrong number of args to QUOTE")
+       | _ -> List.map codegen_expr rest)
+    else
+      let args = Array.of_list try vals.tl with
+            Failure "hd" -> []
+      in
+      let callee = match lookup_function head the_module with
+        | Some head -> head
+        | None -> match head with
+          | "cons" -> codegen_cons args
+          | "car" -> codegen_car args
+          | "cdr" -> codegen_cdr args
+          | _ -> raise (Error "unknown function")
+      in let params = params callee in
+      if Array.length params == Array.length args then () else
+        raise (Error "incorrect # arguments passed");
+      let args = Array.map codegen_expr args in
+      build_call callee args "calltmp" builder
+
+let codegen_cons args = do
+  if Array.length args > 2 then
+    raise (Error "incorrect # arguments passed")
+  else
+    let pointers = Array.make 2 address_type in
+    let ft = function_type cell_type pointers in
+    (* special_forms should be before code generation process? *)
