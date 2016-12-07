@@ -1,8 +1,8 @@
 %{ open Ast %}
 
-%token Quote
 %token Nil
 %token T
+%token Quote
 %token <string> Symbol
 %token <int> Integer
 %token <float> Float
@@ -33,9 +33,9 @@ sexp:
 
 
 atom:
-| Quote {Quote}
 | Nil {Nil}
 | T {T}
+| Quote {Quote}
 | i=Integer {Integer i}
 | f=Float {Float f}
 | str=String {String str}

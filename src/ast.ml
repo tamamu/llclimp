@@ -5,6 +5,8 @@ type atom =
 
   | T
 
+  | Quote
+
   | Integer of int
 
   | Float of float
