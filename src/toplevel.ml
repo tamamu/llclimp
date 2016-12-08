@@ -10,7 +10,7 @@ let rec main_loop () : unit =
   with
   | Some statement -> begin
       print_endline @@ Ast.show_statement statement;
-      dump_value (Codegen.codegen_expr statement);
+      dump_value (Codegen.codegen statement);
       main_loop ()
     end
 
