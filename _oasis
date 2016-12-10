@@ -14,7 +14,7 @@ Library llclimp
   Modules: Ast, Syntax
   CompiledObject: best
   BuildDepends:
-    llvm, llvm.bitreader, sedlex, menhirLib, ppx_deriving.show
+    llvm, llvm.analysis, llvm.bitreader, sedlex, menhirLib, ppx_deriving.show
 
 Executable llclimp
   Path:       src
