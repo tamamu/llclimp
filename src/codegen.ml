@@ -17,6 +17,28 @@ let cell_type = named_struct_type context "cell";;
 
 struct_set_body cell_type [|address_type; address_type|] false;;
 
+let gen_add a_module context =
+  let arg_type = Array.make 2 address_type in
+  let ft = function_type address_type arg_type in
+  let the_function = declare_function "add" ft a_module in
+  let p0 = param the_function 0 in
+  let p1 = param the_function 1 in
+  let bb = append_block context "entry" the_function in
+  position_at_end bb builder;
+  try
+    let lptr = build_inttoptr p0 (pointer_type integer_type) "lptr" builder in
+    let lv = build_load lptr "lv" builder in
+    let rptr = build_inttoptr p1 (pointer_type integer_type) "rptr" builder in
+    let rv = build_load rptr "rv" builder in
+    let sum = build_add lv rv "sum" builder in
+    let addr = build_ptrtoint sum address_type "addr" builder in
+    let ret_val = addr in
+    let _ = build_ret ret_val builder in
+    Llvm_analysis.assert_valid_function the_function;
+  with e->
+    delete_function the_function;
+    raise e;;
+
 let gen_cons a_module context =
   let arg_type = Array.make 2 address_type in
   let ft = function_type address_type arg_type in
@@ -61,6 +83,24 @@ let gen_car a_module context =
     delete_function the_function;
     raise e
 
+let gen_cdr a_module context =
+  let arg_type = Array.make 1 address_type in
+  let ft = function_type address_type arg_type in
+  let the_function = declare_function "cdr" ft a_module in
+  let p0 = param the_function 0 in
+  let bb = append_block context "entry" the_function in
+  position_at_end bb builder;
+  try
+    let ptr = build_inttoptr p0 (pointer_type cell_type) "consptr" builder in
+    let cons = build_struct_gep ptr 0 "cons" builder in
+    let cdr = build_load cons "cdr" builder in
+    let ret_val = cdr in
+    let _ = build_ret ret_val builder in
+    Llvm_analysis.assert_valid_function the_function;
+  with e->
+    delete_function the_function;
+    raise e
+
 let gen_retint a_module context =
   let arg_type = Array.make 1 address_type in
   let ft = function_type integer_type arg_type in
@@ -87,7 +127,9 @@ let gen_main a_module context =
 
 gen_cons the_module context;;
 gen_car the_module context;;
+gen_cdr the_module context;;
 gen_retint the_module context;;
+gen_add the_module context;;
 let main_bb = gen_main the_module context in
 position_at_end main_bb builder;;
 
